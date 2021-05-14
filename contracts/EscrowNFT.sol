@@ -48,6 +48,6 @@ contract EscrowNFT is AccessControl, ERC721Burnable, IEscrowNFT {
     function tokenURI(
         uint256 /*_tokenId*/
     ) public view virtual override(ERC721) returns (string memory) {
-        return 'ipfs://QmcH89swEx4gVFCu6Qn3x2xowtcxiDN8KNVYmSN5UT1s36';
+        return 'ipfs://QmPGm6XXPbEg7B5aV3dvA279jpM6cr6yk3hfaEr4C9dQPB';
     }
 }
