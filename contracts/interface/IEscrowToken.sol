@@ -1,0 +1,41 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+pragma solidity >=0.4.22 <0.9.0;
+
+interface IEscrowToken {
+    enum EscrowStatus {Pending, Completed, Terminated, Refunded}
+
+    struct EscrowDetail {
+        address creater;
+        address recipient;
+        uint256 createrTokenId;
+        uint256 recipientTokenId;
+        uint256 currencyValue;
+        uint256 value;
+        string currencyCode;
+        uint8 hedgeRate;
+        EscrowStatus status;
+        bool canRefund;
+        uint256 terminatedTime;
+    }
+
+    function createEscrow(
+        address to,
+        uint256 currencyValue,
+        bool canRefund,
+        uint256 terminatedTime,
+        string calldata currencyCode,
+        uint8 hedgeRate
+    ) external;
+
+    function completeEscrow(uint256 escrowId) external;
+
+    function terminateEscrow(uint256 escrowId) external;
+
+    function refundEscrow(uint256 escrowId) external;
+
+    function createEscrowCreaterNFT(uint256 escrowId) external;
+
+    function createEscrowRecipientNFT(uint256 escrowId) external;
+
+    function getEscrowDetail(uint256 escrowId) external view returns (EscrowDetail memory);
+}

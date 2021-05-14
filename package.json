@@ -1,0 +1,32 @@
+{
+  "name": "@eartha/token",
+  "version": "1.0.0",
+  "description": "Eartha token smart contracts",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [
+    "eartha",
+    "EscrowNFT",
+    "InvoiceNFT"
+  ],
+  "license": "GPL-2.0-or-later",
+  "devDependencies": {
+    "@chainlink/contracts": "^0.1.7",
+    "@openzeppelin/contracts": "^4.0.0",
+    "@truffle/hdwallet-provider": "^1.2.6",
+    "@uniswap/v2-core": "^1.0.1",
+    "@uniswap/v3-core": "^1.0.0",
+    "dotenv": "^9.0.0",
+    "openzeppelin-solidity": "^4.0.0",
+    "prettier": "^2.3.0",
+    "prettier-plugin-solidity": "^1.0.0-beta.10",
+    "truffle-plugin-verify": "^0.5.7"
+  },
+  "scripts": {
+    "migrate": "truffle migrate",
+    "compile": "truffle compile",
+    "test": "truffle test"
+  }
+}

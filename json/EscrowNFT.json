@@ -1,0 +1,6 @@
+{
+  "name": "EscrowNFT",
+  "description": "EscrowNFTs are credits that allow sellers to receive buyers’ escrow funds(EAR) and EscrowNFTs are debts that allow buyers to settle additional funds or credits that can receive the remaining amount(EAR) at the time of settlement.\nOnce you(seller) own an EscrowNFT, you will be able to sell a credit without notifying the buyer. The person who bought the credit can get the funds(EAR) from the buyer at the time of settlement. If the buyer does not complete the settlement procedure, after the date that the you(seller) and the buyer have agreed in advance has arrived, the person who bought the credit can settle and get the funds(EAR) from the buyer.\nOnce you(buyer) own an EscrowNFT, you will be able to sell a debt without notifying the seller. The person who bought the debt can settle or get the funds(EAR) under conditions agreed in advance by the you(buyer) and seller.\nEach EscrowNFT is a unique (non-fungible) token lying on the public Ethereum blockchain (ERC-721).\n\nAbout escrow details(amount, period, currency)>\nhttps://app.eartha.org/",
+  "external_url": "https://eartha.org/",
+  "image": "ipfs://QmSJvEfmV5vdRoUkaqh3dZ6Yu6Pk9bpvRYqruB68iwD7iJ"
+}
