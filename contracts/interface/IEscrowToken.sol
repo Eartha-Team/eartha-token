@@ -12,7 +12,7 @@ interface IEscrowToken {
         uint256 currencyValue;
         uint256 value;
         string currencyCode;
-        uint8 hedgeRate;
+        uint16 hedgeRate;
         EscrowStatus status;
         bool canRefund;
         uint256 terminatedTime;
@@ -24,7 +24,7 @@ interface IEscrowToken {
         bool canRefund,
         uint256 terminatedTime,
         string calldata currencyCode,
-        uint8 hedgeRate
+        uint16 hedgeRate
     ) external;
 
     function completeEscrow(uint256 escrowId) external;

@@ -59,7 +59,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         bool canRefund,
         uint256 terminatedTime,
         string calldata currencyCode,
-        uint8 hedgeRate
+        uint16 hedgeRate
     ) external virtual override {
         IEarthaTokenRate rate = IEarthaTokenRate(tokenRate);
         uint256 amount = rate.getXToWithHedgeRate(currencyValue, currencyCode, hedgeRate);

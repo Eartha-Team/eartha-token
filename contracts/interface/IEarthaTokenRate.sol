@@ -10,7 +10,7 @@ interface IEarthaTokenRate is ITokenRate {
     function getXToWithHedgeRate(
         uint256 amount,
         string calldata currencyCode,
-        uint8 hedgeRate
+        uint16 hedgeRate
     ) external view returns (uint256);
 
     function setSource(string calldata currencyCode, AggregatorV3Interface source) external returns (bool);

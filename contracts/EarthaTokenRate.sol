@@ -91,7 +91,7 @@ contract EarthaTokenRate is AccessControl, IEarthaTokenRate {
     function getXToWithHedgeRate(
         uint256 amount,
         string calldata currencyCode,
-        uint8 hedgeRate
+        uint16 hedgeRate
     ) external view virtual override returns (uint256) {
         uint256 calcHedgeRate = (hedgeRate * (10**(decimals - 2)));
         return getXTo(_multiply(amount, calcHedgeRate, decimals), currencyCode);
