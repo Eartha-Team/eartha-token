@@ -131,11 +131,14 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         external
         view
         virtual
+        override
         returns (
             uint256 recipientAmount,
+            uint256 recipientSubAmount,
             uint256 recipientCreativeReward,
             uint256 recipientIncentive,
             uint256 createrAmount,
+            uint256 createrSubAmount,
             uint256 createrCreativeReward,
             uint256 createrIncentive
         )
@@ -144,16 +147,18 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         IEarthaTokenRate rate = IEarthaTokenRate(tokenRate);
 
         uint256 ratedAmount = rate.getXTo(ed.currencyValue, ed.currencyCode);
-        uint256 recipientSubAmount = ratedAmount > ed.value ? ed.value : ratedAmount;
-        uint256 createrSubAmount = ed.value - recipientSubAmount;
+        recipientSubAmount = ratedAmount > ed.value ? ed.value : ratedAmount;
+        createrSubAmount = ed.value - recipientSubAmount;
         (recipientAmount, recipientCreativeReward, recipientIncentive) = _estimate(recipientSubAmount);
         (createrAmount, createrCreativeReward, createrIncentive) = _estimate(createrSubAmount);
 
         return (
             recipientAmount,
+            recipientSubAmount,
             recipientCreativeReward,
             recipientIncentive,
             createrAmount,
+            createrSubAmount,
             createrCreativeReward,
             createrIncentive
         );

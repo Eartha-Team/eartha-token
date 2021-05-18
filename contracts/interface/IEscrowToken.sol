@@ -33,6 +33,20 @@ interface IEscrowToken {
 
     function refundEscrow(uint256 escrowId) external;
 
+    function estimateEscrowSettlement(uint256 escrowId)
+        external
+        view
+        returns (
+            uint256 recipientAmount,
+            uint256 recipientSubAmount,
+            uint256 recipientCreativeReward,
+            uint256 recipientIncentive,
+            uint256 createrAmount,
+            uint256 createrSubAmount,
+            uint256 createrCreativeReward,
+            uint256 createrIncentive
+        );
+
     function createEscrowCreaterNFT(uint256 escrowId) external;
 
     function createEscrowRecipientNFT(uint256 escrowId) external;
