@@ -86,7 +86,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         emit CreateNewEscrow(escrowId, ed.creater, ed.recipient);
     }
 
-    function completeEscrow(uint256 escrowId) external virtual override {
+    function buyerSettlement(uint256 escrowId) external virtual override {
         EscrowDetail storage ed = _escrowDetail[escrowId];
         address createrAddress = ed.createrTokenId != 0 ? escrowNFT.ownerOf(ed.createrTokenId) : ed.creater;
         address recipientAddress = ed.recipientTokenId != 0 ? escrowNFT.ownerOf(ed.recipientTokenId) : ed.recipient;
@@ -96,10 +96,10 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         ed.status = EscrowStatus.Completed;
         _payOffEscrow(recipientAddress, createrAddress, ed);
 
-        emit CompleteEscrow(escrowId, ed.creater, ed.recipient);
+        emit BuyerSettlement(escrowId, ed.creater, ed.recipient);
     }
 
-    function terminateEscrow(uint256 escrowId) external virtual override {
+    function sellerSettlement(uint256 escrowId) external virtual override {
         EscrowDetail storage ed = _escrowDetail[escrowId];
         address createrAddress = ed.createrTokenId != 0 ? escrowNFT.ownerOf(ed.createrTokenId) : ed.creater;
         address recipientAddress = ed.recipientTokenId != 0 ? escrowNFT.ownerOf(ed.recipientTokenId) : ed.recipient;
@@ -110,10 +110,10 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         ed.status = EscrowStatus.Terminated;
         _payOffEscrow(recipientAddress, createrAddress, ed);
 
-        emit TerminateEscrow(escrowId, ed.creater, ed.recipient);
+        emit SellerSettlement(escrowId, ed.creater, ed.recipient);
     }
 
-    function refundEscrow(uint256 escrowId) external virtual override {
+    function buyerRefund(uint256 escrowId) external virtual override {
         EscrowDetail storage ed = _escrowDetail[escrowId];
         address createrAddress = ed.createrTokenId != 0 ? escrowNFT.ownerOf(ed.createrTokenId) : ed.creater;
         address recipientAddress = ed.recipientTokenId != 0 ? escrowNFT.ownerOf(ed.recipientTokenId) : ed.recipient;
@@ -124,7 +124,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         ed.status = EscrowStatus.Terminated;
         _transfer(address(this), ed.creater, ed.value);
 
-        emit RefundEscrow(escrowId, ed.creater, ed.recipient);
+        emit BuyerRefund(escrowId, ed.creater, ed.recipient);
     }
 
     function estimateEscrowSettlement(uint256 escrowId)
@@ -164,24 +164,24 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         );
     }
 
-    function createEscrowCreaterNFT(uint256 escrowId) external virtual override {
+    function createBuyerEscrowNFT(uint256 escrowId) external virtual override {
         EscrowDetail storage ed = _escrowDetail[escrowId];
         require(ed.creater == _msgSender());
         require(ed.status == EscrowStatus.Pending);
         require(ed.createrTokenId == 0);
         uint256 tokenId = escrowNFT.mint(ed.creater, escrowId);
         ed.createrTokenId = tokenId;
-        emit CreateNewEscrowCreaterNFT(escrowId, tokenId, ed.creater);
+        emit CreateBuyerEscrowNFT(escrowId, tokenId, ed.creater);
     }
 
-    function createEscrowRecipientNFT(uint256 escrowId) external virtual override {
+    function createSellerEscrowNFT(uint256 escrowId) external virtual override {
         EscrowDetail storage ed = _escrowDetail[escrowId];
         require(ed.recipient == _msgSender());
         require(ed.status == EscrowStatus.Pending);
         require(ed.recipientTokenId == 0);
         uint256 tokenId = escrowNFT.mint(ed.recipient, escrowId);
         ed.recipientTokenId = tokenId;
-        emit CreateNewEscrowRecipientNFT(escrowId, tokenId, ed.recipient);
+        emit CreateSellerEscrowNFT(escrowId, tokenId, ed.recipient);
     }
 
     function getEscrowDetail(uint256 escrowId) external view virtual override returns (EscrowDetail memory) {

@@ -40,8 +40,8 @@ contract("EarthaToken", async accounts => {
         //10EAR 200%
         await this.earthaTokenInstance.createEscrow(accounts[1], web3.utils.toBN(1000).mul(decimalPowed), false, unix, 'EAR', 200);
     });
-    it("completeEscrow", async () => {
-        await this.earthaTokenInstance.completeEscrow(1);
+    it("buyerSettlement", async () => {
+        await this.earthaTokenInstance.buyerSettlement(1);
 
         let balance0 = await this.earthaTokenInstance.balanceOf(accounts[0]);
         balance0 = web3.utils.fromWei(balance0, "ether");
@@ -60,8 +60,8 @@ contract("EarthaToken", async accounts => {
         //10EAR 200%
         await this.earthaTokenInstance.createEscrow(accounts[1], web3.utils.toBN(1000).mul(decimalPowed), false, unix, 'EAR', 200);
     });
-    it("terminateEscrow", async () => {
-        await this.earthaTokenInstance.terminateEscrow(2, {from:accounts[1]});
+    it("sellerSettlement", async () => {
+        await this.earthaTokenInstance.sellerSettlement(2, {from:accounts[1]});
 
         let balance0 = await this.earthaTokenInstance.balanceOf(accounts[0]);
         balance0 = web3.utils.fromWei(balance0, "ether");
@@ -80,8 +80,8 @@ contract("EarthaToken", async accounts => {
         //10EAR 200%
         await this.earthaTokenInstance.createEscrow(accounts[1], web3.utils.toBN(1000).mul(decimalPowed), true, unix, 'EAR', 200);
     });
-    it("refundEscrow", async () => {
-        await this.earthaTokenInstance.refundEscrow(3);
+    it("buyerRefund", async () => {
+        await this.earthaTokenInstance.buyerRefund(3);
 
         let balance0 = await this.earthaTokenInstance.balanceOf(accounts[0]);
         balance0 = web3.utils.fromWei(balance0, "ether");
@@ -100,14 +100,14 @@ contract("EarthaToken", async accounts => {
         //10EAR 200%
         await this.earthaTokenInstance.createEscrow(accounts[1], web3.utils.toBN(1000).mul(decimalPowed), false, unix, 'EAR', 200);
     });
-    it("refundEscrow Error", async () => {
+    it("buyerRefund Error", async () => {
         try {
-            await this.earthaTokenInstance.refundEscrow(4);
+            await this.earthaTokenInstance.buyerRefund(4);
         } catch (error) {
             assert(error, " VM Exception while processing transaction: revert can not refund -- Reason given: can not refund.");
         }
     });
-    it("createEscrowCreaterNFT", async () => {
-        await this.earthaTokenInstance.createEscrowCreaterNFT(4);
+    it("createBuyerEscrowNFT", async () => {
+        await this.earthaTokenInstance.createBuyerEscrowNFT(4);
     });
 });

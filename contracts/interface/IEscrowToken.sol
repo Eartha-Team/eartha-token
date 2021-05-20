@@ -27,11 +27,11 @@ interface IEscrowToken {
         uint16 hedgeRate
     ) external;
 
-    function completeEscrow(uint256 escrowId) external;
+    function buyerSettlement(uint256 escrowId) external;
 
-    function terminateEscrow(uint256 escrowId) external;
+    function sellerSettlement(uint256 escrowId) external;
 
-    function refundEscrow(uint256 escrowId) external;
+    function buyerRefund(uint256 escrowId) external;
 
     function estimateEscrowSettlement(uint256 escrowId)
         external
@@ -47,9 +47,9 @@ interface IEscrowToken {
             uint256 createrIncentive
         );
 
-    function createEscrowCreaterNFT(uint256 escrowId) external;
+    function createBuyerEscrowNFT(uint256 escrowId) external;
 
-    function createEscrowRecipientNFT(uint256 escrowId) external;
+    function createSellerEscrowNFT(uint256 escrowId) external;
 
     function getEscrowDetail(uint256 escrowId) external view returns (EscrowDetail memory);
 }
