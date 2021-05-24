@@ -135,36 +135,25 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         view
         virtual
         override
-        returns (
-            uint256 recipientAmount,
-            uint256 recipientSubAmount,
-            uint256 recipientCreativeReward,
-            uint256 recipientIncentive,
-            uint256 createrAmount,
-            uint256 createrSubAmount,
-            uint256 createrCreativeReward,
-            uint256 createrIncentive
-        )
+        returns (EscrowSettlementAmounts memory)
     {
         EscrowDetail memory ed = _escrowDetail[escrowId];
+        EscrowSettlementAmounts memory esa;
         IEarthaTokenRate rate = IEarthaTokenRate(tokenRate);
 
         uint256 ratedAmount = rate.getXTo(ed.currencyValue, ed.currencyCode);
-        recipientSubAmount = ratedAmount > ed.value ? ed.value : ratedAmount;
-        createrSubAmount = ed.value - recipientSubAmount;
-        (recipientAmount, recipientCreativeReward, recipientIncentive) = _estimate(recipientSubAmount);
-        (createrAmount, createrCreativeReward, createrIncentive) = _estimate(createrSubAmount);
+        esa.recipientSubAmount = ratedAmount > ed.value ? ed.value : ratedAmount;
+        esa.createrSubAmount = ed.value - esa.recipientSubAmount;
+        if (esa.recipientSubAmount > 0) {
+            (esa.recipientAmount, esa.recipientCreativeReward, esa.recipientIncentive) = _estimate(
+                esa.recipientSubAmount
+            );
+        }
+        if (esa.createrSubAmount > 0) {
+            (esa.createrAmount, esa.createrCreativeReward, esa.createrIncentive) = _estimate(esa.createrSubAmount);
+        }
 
-        return (
-            recipientAmount,
-            recipientSubAmount,
-            recipientCreativeReward,
-            recipientIncentive,
-            createrAmount,
-            createrSubAmount,
-            createrCreativeReward,
-            createrIncentive
-        );
+        return (esa);
     }
 
     function createBuyerEscrowNFT(uint256 escrowId) external virtual override {
@@ -172,7 +161,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         require(ed.creater == _msgSender(), 'EarthaToken: not creater');
         require(ed.status == EscrowStatus.Pending, 'EarthaToken: EscrowStatus is not Pending');
         require(ed.createrTokenId == 0, 'EarthaToken: Already exists');
-        if(ed.canRefund){
+        if (ed.canRefund) {
             require(ed.canRefundTime >= block.timestamp, 'EarthaToken: canRefundTime error');
         }
         uint256 tokenId = escrowNFT.mint(ed.creater, escrowId);
@@ -185,7 +174,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         require(ed.recipient == _msgSender(), 'EarthaToken: not recipient');
         require(ed.status == EscrowStatus.Pending, 'EarthaToken: EscrowStatus is not Pending');
         require(ed.recipientTokenId == 0, 'EarthaToken: Already exists');
-        if(ed.canRefund){
+        if (ed.canRefund) {
             require(ed.canRefundTime >= block.timestamp, 'EarthaToken: canRefundTime error');
         }
         uint256 tokenId = escrowNFT.mint(ed.recipient, escrowId);

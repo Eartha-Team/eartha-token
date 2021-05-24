@@ -25,6 +25,16 @@ interface IEscrowToken {
         uint256 canRefundTime;
         uint256 terminatedTime;
     }
+    struct EscrowSettlementAmounts {
+        uint256 recipientAmount;
+        uint256 recipientSubAmount;
+        uint256 recipientCreativeReward;
+        uint256 recipientIncentive;
+        uint256 createrAmount;
+        uint256 createrSubAmount;
+        uint256 createrCreativeReward;
+        uint256 createrIncentive;
+    }
 
     function createEscrow(
         address to,
@@ -42,19 +52,7 @@ interface IEscrowToken {
 
     function buyerRefund(uint256 escrowId) external;
 
-    function estimateEscrowSettlement(uint256 escrowId)
-        external
-        view
-        returns (
-            uint256 recipientAmount,
-            uint256 recipientSubAmount,
-            uint256 recipientCreativeReward,
-            uint256 recipientIncentive,
-            uint256 createrAmount,
-            uint256 createrSubAmount,
-            uint256 createrCreativeReward,
-            uint256 createrIncentive
-        );
+    function estimateEscrowSettlement(uint256 escrowId) external view returns (EscrowSettlementAmounts memory);
 
     function createBuyerEscrowNFT(uint256 escrowId) external;
 
