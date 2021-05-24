@@ -122,7 +122,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         require(createrAddress == _msgSender() || recipientAddress == _msgSender(), 'EarthaToken: not user');
         require(ed.status == EscrowStatus.Pending, 'EarthaToken: EscrowStatus is not Pending');
         require(ed.canRefund, 'EarthaToken: can not refund');
-        require(ed.canRefundTime < block.timestamp, 'EarthaToken: canRefundTime error');
+        require(ed.canRefundTime >= block.timestamp, 'EarthaToken: canRefundTime error');
 
         ed.status = EscrowStatus.Terminated;
         _transfer(address(this), ed.creater, ed.value);
@@ -162,7 +162,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         require(ed.status == EscrowStatus.Pending, 'EarthaToken: EscrowStatus is not Pending');
         require(ed.createrTokenId == 0, 'EarthaToken: Already exists');
         if (ed.canRefund) {
-            require(ed.canRefundTime >= block.timestamp, 'EarthaToken: canRefundTime error');
+            require(ed.canRefundTime < block.timestamp, 'EarthaToken: canRefundTime error');
         }
         uint256 tokenId = escrowNFT.mint(ed.creater, escrowId);
         ed.createrTokenId = tokenId;
@@ -175,7 +175,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         require(ed.status == EscrowStatus.Pending, 'EarthaToken: EscrowStatus is not Pending');
         require(ed.recipientTokenId == 0, 'EarthaToken: Already exists');
         if (ed.canRefund) {
-            require(ed.canRefundTime >= block.timestamp, 'EarthaToken: canRefundTime error');
+            require(ed.canRefundTime < block.timestamp, 'EarthaToken: canRefundTime error');
         }
         uint256 tokenId = escrowNFT.mint(ed.recipient, escrowId);
         ed.recipientTokenId = tokenId;
