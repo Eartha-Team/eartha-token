@@ -96,9 +96,9 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         require(ed.status == EscrowStatus.Pending, 'EarthaToken: EscrowStatus is not Pending');
 
         ed.status = EscrowStatus.Completed;
-        _payOffEscrow(recipientAddress, createrAddress, ed);
+        EscrowSettlementAmounts memory esa = _payOffEscrow(recipientAddress, createrAddress, ed);
 
-        emit BuyerSettlement(escrowId, ed.creater, ed.recipient);
+        emit BuyerSettlement(escrowId, ed.creater, ed.recipient, esa);
     }
 
     function sellerSettlement(uint256 escrowId) external virtual override {
@@ -110,9 +110,9 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         require(ed.terminatedTime < block.timestamp, 'EarthaToken: terminatedTime error');
 
         ed.status = EscrowStatus.Terminated;
-        _payOffEscrow(recipientAddress, createrAddress, ed);
+        EscrowSettlementAmounts memory esa = _payOffEscrow(recipientAddress, createrAddress, ed);
 
-        emit SellerSettlement(escrowId, ed.creater, ed.recipient);
+        emit SellerSettlement(escrowId, ed.creater, ed.recipient, esa);
     }
 
     function buyerRefund(uint256 escrowId) external virtual override {
@@ -226,28 +226,32 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         address recipientAddress,
         address createrAddress,
         EscrowDetail memory ed
-    ) internal virtual {
+    ) internal virtual returns (EscrowSettlementAmounts memory) {
+        EscrowSettlementAmounts memory esa;
         IEarthaTokenRate rate = IEarthaTokenRate(tokenRate);
 
         uint256 ratedAmount = rate.getXTo(ed.currencyValue, ed.currencyCode);
-        uint256 recipientAmount = ratedAmount > ed.value ? ed.value : ratedAmount;
-        uint256 createrAmount = ed.value - recipientAmount;
+        esa.recipientSubAmount = ratedAmount > ed.value ? ed.value : ratedAmount;
+        esa.createrSubAmount = ed.value - esa.recipientSubAmount;
 
-        if (recipientAmount > 0) {
-            (uint256 amount, uint256 creativeReward, uint256 incentive) = _estimate(recipientAmount);
-            suppliedIncentives += incentive;
-            unpaidCreativeRewards += creativeReward;
-            if (amount > 0) {
-                _transfer(address(this), recipientAddress, amount);
+        if (esa.recipientSubAmount > 0) {
+            (esa.recipientAmount, esa.recipientCreativeReward, esa.recipientIncentive) = _estimate(
+                esa.recipientSubAmount
+            );
+            suppliedIncentives += esa.recipientIncentive;
+            unpaidCreativeRewards += esa.recipientCreativeReward;
+            if (esa.recipientAmount > 0) {
+                _transfer(address(this), recipientAddress, esa.recipientAmount);
             }
         }
-        if (createrAmount > 0) {
-            (uint256 amount, uint256 creativeReward, uint256 incentive) = _estimate(createrAmount);
-            suppliedIncentives += incentive;
-            unpaidCreativeRewards += creativeReward;
-            if (amount > 0) {
-                _transfer(address(this), createrAddress, amount);
+        if (esa.createrSubAmount > 0) {
+            (esa.createrAmount, esa.createrCreativeReward, esa.createrIncentive) = _estimate(esa.createrSubAmount);
+            suppliedIncentives += esa.createrIncentive;
+            unpaidCreativeRewards += esa.createrCreativeReward;
+            if (esa.createrAmount > 0) {
+                _transfer(address(this), createrAddress, esa.createrAmount);
             }
         }
+        return esa;
     }
 }
