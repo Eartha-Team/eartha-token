@@ -58,6 +58,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         uint256 currencyValue,
         bool canRefund,
         uint256 terminatedTime,
+        uint256 canRefundTime,
         string calldata currencyCode,
         uint16 hedgeRate
     ) external virtual override {
@@ -77,7 +78,8 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
                 currencyCode: currencyCode,
                 hedgeRate: hedgeRate,
                 canRefund: canRefund,
-                terminatedTime: terminatedTime
+                terminatedTime: terminatedTime,
+                canRefundTime: canRefundTime
             });
         uint256 escrowId = _escrowIdTracker.current();
         _escrowDetail[escrowId] = ed;
@@ -120,6 +122,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         require(createrAddress == _msgSender() || recipientAddress == _msgSender(), 'EarthaToken: not user');
         require(ed.status == EscrowStatus.Pending, 'EarthaToken: EscrowStatus is not Pending');
         require(ed.canRefund, 'EarthaToken: can not refund');
+        require(ed.canRefundTime < block.timestamp, 'EarthaToken: canRefundTime error');
 
         ed.status = EscrowStatus.Terminated;
         _transfer(address(this), ed.creater, ed.value);
@@ -166,9 +169,12 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
 
     function createBuyerEscrowNFT(uint256 escrowId) external virtual override {
         EscrowDetail storage ed = _escrowDetail[escrowId];
-        require(ed.creater == _msgSender());
-        require(ed.status == EscrowStatus.Pending);
-        require(ed.createrTokenId == 0);
+        require(ed.creater == _msgSender(), 'EarthaToken: not creater');
+        require(ed.status == EscrowStatus.Pending, 'EarthaToken: EscrowStatus is not Pending');
+        require(ed.createrTokenId == 0, 'EarthaToken: Already exists');
+        if(ed.canRefund){
+            require(ed.canRefundTime >= block.timestamp, 'EarthaToken: canRefundTime error');
+        }
         uint256 tokenId = escrowNFT.mint(ed.creater, escrowId);
         ed.createrTokenId = tokenId;
         emit CreateBuyerEscrowNFT(escrowId, tokenId, ed.creater);
@@ -176,9 +182,12 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
 
     function createSellerEscrowNFT(uint256 escrowId) external virtual override {
         EscrowDetail storage ed = _escrowDetail[escrowId];
-        require(ed.recipient == _msgSender());
-        require(ed.status == EscrowStatus.Pending);
-        require(ed.recipientTokenId == 0);
+        require(ed.recipient == _msgSender(), 'EarthaToken: not recipient');
+        require(ed.status == EscrowStatus.Pending, 'EarthaToken: EscrowStatus is not Pending');
+        require(ed.recipientTokenId == 0, 'EarthaToken: Already exists');
+        if(ed.canRefund){
+            require(ed.canRefundTime >= block.timestamp, 'EarthaToken: canRefundTime error');
+        }
         uint256 tokenId = escrowNFT.mint(ed.recipient, escrowId);
         ed.recipientTokenId = tokenId;
         emit CreateSellerEscrowNFT(escrowId, tokenId, ed.recipient);

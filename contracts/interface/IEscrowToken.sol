@@ -2,6 +2,13 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 interface IEscrowToken {
+    event CreateNewEscrow(uint256 escrowId, address indexed creater, address indexed recipient);
+    event BuyerSettlement(uint256 indexed escrowId, address indexed creater, address indexed recipient);
+    event SellerSettlement(uint256 indexed escrowId, address indexed creater, address indexed recipient);
+    event BuyerRefund(uint256 indexed escrowId, address indexed creater, address indexed recipient);
+    event CreateBuyerEscrowNFT(uint256 indexed escrowId, uint256 tokenId, address tokenCreater);
+    event CreateSellerEscrowNFT(uint256 indexed escrowId, uint256 tokenId, address tokenCreater);
+
     enum EscrowStatus {Pending, Completed, Terminated, Refunded}
 
     struct EscrowDetail {
@@ -15,6 +22,7 @@ interface IEscrowToken {
         uint16 hedgeRate;
         EscrowStatus status;
         bool canRefund;
+        uint256 canRefundTime;
         uint256 terminatedTime;
     }
 
@@ -23,6 +31,7 @@ interface IEscrowToken {
         uint256 currencyValue,
         bool canRefund,
         uint256 terminatedTime,
+        uint256 canRefundTime,
         string calldata currencyCode,
         uint16 hedgeRate
     ) external;
