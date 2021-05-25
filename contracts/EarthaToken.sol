@@ -62,8 +62,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         string calldata currencyCode,
         uint16 hedgeRate
     ) external virtual override {
-        IEarthaTokenRate rate = IEarthaTokenRate(tokenRate);
-        uint256 amount = rate.getXToWithHedgeRate(currencyValue, currencyCode, hedgeRate);
+        uint256 amount = tokenRate.getXToWithHedgeRate(currencyValue, currencyCode, hedgeRate);
         require(amount > ESCROW_MIN_AMOUNT, 'Minimum is 400 EAR');
         _transfer(_msgSender(), address(this), amount);
         EscrowDetail memory ed =
@@ -139,9 +138,8 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
     {
         EscrowDetail memory ed = _escrowDetail[escrowId];
         EscrowSettlementAmounts memory esa;
-        IEarthaTokenRate rate = IEarthaTokenRate(tokenRate);
 
-        uint256 ratedAmount = rate.getXTo(ed.currencyValue, ed.currencyCode);
+        uint256 ratedAmount = tokenRate.getXTo(ed.currencyValue, ed.currencyCode);
         esa.recipientSubAmount = ratedAmount > ed.value ? ed.value : ratedAmount;
         esa.createrSubAmount = ed.value - esa.recipientSubAmount;
         if (esa.recipientSubAmount > 0) {
@@ -161,9 +159,6 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         require(ed.creater == _msgSender(), 'EarthaToken: not creater');
         require(ed.status == EscrowStatus.Pending, 'EarthaToken: EscrowStatus is not Pending');
         require(ed.createrTokenId == 0, 'EarthaToken: Already exists');
-        if (ed.canRefund) {
-            require(ed.canRefundTime < block.timestamp, 'EarthaToken: canRefundTime error');
-        }
         uint256 tokenId = escrowNFT.mint(ed.creater, escrowId);
         ed.createrTokenId = tokenId;
         emit CreateBuyerEscrowNFT(escrowId, tokenId, ed.creater);
@@ -213,13 +208,12 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
             uint256 incentive
         )
     {
-        IEarthaTokenRate rate = IEarthaTokenRate(tokenRate);
-        uint incentiveRated = rate.getXTo(ESCROW_AMOUNT_INCENTIVE_USD, "USD");
+        uint256 incentiveRated = tokenRate.getXTo(ESCROW_AMOUNT_INCENTIVE_USD, 'USD');
         if (ESCROW_MAX_INCENTIVE >= (suppliedIncentives + incentiveRated)) {
             incentive = incentiveRated;
             amount += incentive;
         }
-        uint creativeRewardRated = rate.getXTo(ESCROW_CREATIVE_REWARD_USD, "USD");
+        uint256 creativeRewardRated = tokenRate.getXTo(ESCROW_CREATIVE_REWARD_USD, 'USD');
         creativeReward = amount > creativeRewardRated ? creativeRewardRated : amount;
         amount -= creativeReward;
         return (amount, creativeReward, incentive);
@@ -231,9 +225,8 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         EscrowDetail memory ed
     ) internal virtual returns (EscrowSettlementAmounts memory) {
         EscrowSettlementAmounts memory esa;
-        IEarthaTokenRate rate = IEarthaTokenRate(tokenRate);
 
-        uint256 ratedAmount = rate.getXTo(ed.currencyValue, ed.currencyCode);
+        uint256 ratedAmount = tokenRate.getXTo(ed.currencyValue, ed.currencyCode);
         esa.recipientSubAmount = ratedAmount > ed.value ? ed.value : ratedAmount;
         esa.createrSubAmount = ed.value - esa.recipientSubAmount;
 

@@ -3,13 +3,13 @@ pragma solidity >=0.4.22 <0.9.0;
 
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '../interface/IERC20Ratable.sol';
-import '../interface/ITokenRate.sol';
+import '../interface/IEarthaTokenRate.sol';
 
 abstract contract ERC20Ratable is ERC20, IERC20Ratable {
-    address public tokenRate;
+    IEarthaTokenRate public tokenRate;
     bool public initializedTokenRate = false;
 
-    function initializeTokenRate(address rate) external virtual {
+    function initializeTokenRate(IEarthaTokenRate rate) external virtual {
         require(!initializedTokenRate, 'already initialized');
         tokenRate = rate;
         initializedTokenRate = true;
@@ -81,12 +81,10 @@ abstract contract ERC20Ratable is ERC20, IERC20Ratable {
     }
 
     function _getXTo(uint256 amount, string calldata currencyCode) internal view virtual returns (uint256) {
-        ITokenRate rate = ITokenRate(tokenRate);
-        return rate.getXTo(amount, currencyCode);
+        return tokenRate.getXTo(amount, currencyCode);
     }
 
     function _getToX(uint256 amount, string calldata currencyCode) internal view virtual returns (uint256) {
-        ITokenRate rate = ITokenRate(tokenRate);
-        return rate.getToX(amount, currencyCode);
+        return tokenRate.getToX(amount, currencyCode);
     }
 }
