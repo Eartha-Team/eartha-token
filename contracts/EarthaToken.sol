@@ -97,7 +97,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         ed.status = EscrowStatus.Completed;
         EscrowSettlementAmounts memory esa = _payOffEscrow(recipientAddress, createrAddress, ed);
 
-        emit BuyerSettlement(escrowId, ed.creater, ed.recipient, esa);
+        emit BuyerSettlement(escrowId, createrAddress, recipientAddress, esa);
     }
 
     function sellerSettlement(uint256 escrowId) external virtual override {
@@ -111,7 +111,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         ed.status = EscrowStatus.Terminated;
         EscrowSettlementAmounts memory esa = _payOffEscrow(recipientAddress, createrAddress, ed);
 
-        emit SellerSettlement(escrowId, ed.creater, ed.recipient, esa);
+        emit SellerSettlement(escrowId, createrAddress, recipientAddress, esa);
     }
 
     function buyerRefund(uint256 escrowId) external virtual override {
@@ -124,9 +124,9 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         require(ed.canRefundTime >= block.timestamp, 'EarthaToken: canRefundTime error');
 
         ed.status = EscrowStatus.Terminated;
-        _transfer(address(this), ed.creater, ed.value);
+        _transfer(address(this), createrAddress, ed.value);
 
-        emit BuyerRefund(escrowId, ed.creater, ed.recipient);
+        emit BuyerRefund(escrowId, createrAddress, recipientAddress);
     }
 
     function estimateEscrowSettlement(uint256 escrowId)
