@@ -123,7 +123,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         require(ed.canRefund, 'EarthaToken: can not refund');
         require(ed.canRefundTime >= block.timestamp, 'EarthaToken: canRefundTime error');
 
-        ed.status = EscrowStatus.Terminated;
+        ed.status = EscrowStatus.Refunded;
         _transfer(address(this), createrAddress, ed.value);
 
         emit Refund(escrowId, createrAddress, recipientAddress);
