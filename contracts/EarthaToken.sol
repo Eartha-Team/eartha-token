@@ -114,7 +114,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         emit SellerSettlement(escrowId, createrAddress, recipientAddress, esa);
     }
 
-    function buyerRefund(uint256 escrowId) external virtual override {
+    function refund(uint256 escrowId) external virtual override {
         EscrowDetail storage ed = _escrowDetail[escrowId];
         address createrAddress = ed.createrTokenId != 0 ? escrowNFT.ownerOf(ed.createrTokenId) : ed.creater;
         address recipientAddress = ed.recipientTokenId != 0 ? escrowNFT.ownerOf(ed.recipientTokenId) : ed.recipient;
@@ -126,7 +126,7 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
         ed.status = EscrowStatus.Terminated;
         _transfer(address(this), createrAddress, ed.value);
 
-        emit BuyerRefund(escrowId, createrAddress, recipientAddress);
+        emit Refund(escrowId, createrAddress, recipientAddress);
     }
 
     function estimateEscrowSettlement(uint256 escrowId)

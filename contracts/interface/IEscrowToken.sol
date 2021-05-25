@@ -15,7 +15,7 @@ interface IEscrowToken {
         address indexed recipient,
         EscrowSettlementAmounts esa
     );
-    event BuyerRefund(uint256 indexed escrowId, address indexed creater, address indexed recipient);
+    event Refund(uint256 indexed escrowId, address indexed creater, address indexed recipient);
     event CreateBuyerEscrowNFT(uint256 indexed escrowId, uint256 tokenId, address tokenCreater);
     event CreateSellerEscrowNFT(uint256 indexed escrowId, uint256 tokenId, address tokenCreater);
 
@@ -60,7 +60,7 @@ interface IEscrowToken {
 
     function sellerSettlement(uint256 escrowId) external;
 
-    function buyerRefund(uint256 escrowId) external;
+    function refund(uint256 escrowId) external;
 
     function estimateEscrowSettlement(uint256 escrowId) external view returns (EscrowSettlementAmounts memory);
 
