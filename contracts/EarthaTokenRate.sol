@@ -2,8 +2,10 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 import '@openzeppelin/contracts/access/AccessControl.sol';
-import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
-import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol';
+import '@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolDerivedState.sol';
+import '@uniswap/v3-core/contracts/libraries/TickMath.sol';
+import '@uniswap/v3-core/contracts/libraries/FullMath.sol';
+import '@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol';
 import '@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol';
 import './interface/IEarthaTokenRate.sol';
 
@@ -15,7 +17,7 @@ contract EarthaTokenRate is AccessControl, IEarthaTokenRate {
     AggregatorV3Interface public USDPriceFeed;
     address public immutable ETHAddress;
     address public immutable EARAddress;
-    IUniswapV2Factory public immutable uniswapFactory;
+    IUniswapV3Factory public immutable uniswapFactory;
     uint256 public immutable decimals;
 
     constructor(
@@ -26,7 +28,7 @@ contract EarthaTokenRate is AccessControl, IEarthaTokenRate {
         AggregatorV3Interface GBPFeed,
         address ETHAddress_,
         address EARAddress_,
-        IUniswapV2Factory uniswapFactoryAddress_
+        IUniswapV3Factory uniswapFactoryAddress_
     ) AccessControl() {
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(SOURCE_SETTER_ROLE, _msgSender());
@@ -106,11 +108,11 @@ contract EarthaTokenRate is AccessControl, IEarthaTokenRate {
     }
 
     function _getETHTo(uint256 amount) internal view virtual returns (uint256) {
-        address pairAddress = _getPairAddress(uniswapFactory, EARAddress, ETHAddress);
-        if (pairAddress == address(0)) {
+        address poolAddress = _getPoolAddress(EARAddress, ETHAddress);
+        if (poolAddress == address(0)) {
             return 0;
         }
-        return _getTokenPrice(pairAddress, amount);
+        return _getTokenPrice(poolAddress, amount);
     }
 
     function _getUSDTo(uint256 amount) internal view virtual returns (uint256) {
@@ -171,22 +173,34 @@ contract EarthaTokenRate is AccessControl, IEarthaTokenRate {
         return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
     }
 
-    function _getPairAddress(
-        IUniswapV2Factory factoryAddress,
+    function _getPoolAddress(
         address token1,
         address token2
     ) internal view returns (address) {
-        if (address(factoryAddress) == address(0) || token1 == address(0) || token2 == address(0)) {
+        if (address(uniswapFactory) == address(0) || token1 == address(0) || token2 == address(0)) {
             return address(0);
         }
-        IUniswapV2Factory factory = IUniswapV2Factory(factoryAddress);
-        return factory.getPair(token1, token2);
+        return uniswapFactory.getPool(token1, token2,3000);
     }
+    function _getTokenPrice(address poolAddress, uint256 amount) internal view returns (uint256) {
+        IUniswapV3PoolDerivedState pool = IUniswapV3PoolDerivedState(poolAddress);
+        uint32[] memory secondsAgos = new uint32[](2);
+        secondsAgos[0] = 0;
+        secondsAgos[1] = 10;
+        (int56[] memory tickCumulatives,) = pool.observe(secondsAgos);
 
-    function _getTokenPrice(address pairAddress, uint256 amount) internal view returns (uint256) {
-        IUniswapV2Pair pair = IUniswapV2Pair(pairAddress);
-        (uint256 Res0, uint256 Res1, ) = pair.getReserves();
+        int24 tick = int24((tickCumulatives[0] - tickCumulatives[1]) / 10);
+        return _tickToPrice(tick,amount);
+    }
+    function _tickToPrice(int24 tick,uint256 amount) internal pure returns (uint256 price) {
+        uint160 sqrtPriceX96 = TickMath.getSqrtRatioAtTick(tick);
 
-        return ((amount * Res0) / Res1);
+        if (sqrtPriceX96 <= type(uint128).max) {
+            uint256 priceX128 = uint256(sqrtPriceX96) * sqrtPriceX96;
+            price = FullMath.mulDiv(priceX128, amount, 1 << 192);
+        } else {
+            uint256 priceX128 = FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, 1 << 64);
+            price = FullMath.mulDiv(priceX128, amount, 1 << 128);
+        }
     }
 }

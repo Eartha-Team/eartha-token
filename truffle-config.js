@@ -55,9 +55,6 @@ module.exports = {
         optimizer: {
           enabled: true,
           runs: 800
-        },
-        metadata: {
-          bytecodeHash: 'none',
         }
       }
     }
