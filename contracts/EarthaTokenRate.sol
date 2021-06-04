@@ -3,10 +3,10 @@ pragma solidity >=0.4.22 <0.9.0;
 
 import '@openzeppelin/contracts/access/AccessControl.sol';
 import '@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolDerivedState.sol';
-import '@uniswap/v3-core/contracts/libraries/TickMath.sol';
-import '@uniswap/v3-core/contracts/libraries/FullMath.sol';
 import '@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol';
 import '@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol';
+import './libraries/TickMath.sol';
+import './libraries/FullMath.sol';
 import './interface/IEarthaTokenRate.sol';
 
 contract EarthaTokenRate is AccessControl, IEarthaTokenRate {
@@ -173,26 +173,25 @@ contract EarthaTokenRate is AccessControl, IEarthaTokenRate {
         return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
     }
 
-    function _getPoolAddress(
-        address token1,
-        address token2
-    ) internal view returns (address) {
+    function _getPoolAddress(address token1, address token2) internal view returns (address) {
         if (address(uniswapFactory) == address(0) || token1 == address(0) || token2 == address(0)) {
             return address(0);
         }
-        return uniswapFactory.getPool(token1, token2,3000);
+        return uniswapFactory.getPool(token1, token2, 3000);
     }
+
     function _getTokenPrice(address poolAddress, uint256 amount) internal view returns (uint256) {
         IUniswapV3PoolDerivedState pool = IUniswapV3PoolDerivedState(poolAddress);
         uint32[] memory secondsAgos = new uint32[](2);
         secondsAgos[0] = 0;
         secondsAgos[1] = 10;
-        (int56[] memory tickCumulatives,) = pool.observe(secondsAgos);
+        (int56[] memory tickCumulatives, ) = pool.observe(secondsAgos);
 
         int24 tick = int24((tickCumulatives[0] - tickCumulatives[1]) / 10);
-        return _tickToPrice(tick,amount);
+        return _tickToPrice(tick, amount);
     }
-    function _tickToPrice(int24 tick,uint256 amount) internal pure returns (uint256 price) {
+
+    function _tickToPrice(int24 tick, uint256 amount) internal pure returns (uint256 price) {
         uint160 sqrtPriceX96 = TickMath.getSqrtRatioAtTick(tick);
 
         if (sqrtPriceX96 <= type(uint128).max) {
