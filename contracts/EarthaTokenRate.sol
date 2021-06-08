@@ -191,15 +191,19 @@ contract EarthaTokenRate is AccessControl, IEarthaTokenRate {
         return _tickToPrice(tick, amount);
     }
 
-    function _tickToPrice(int24 tick, uint256 amount) internal pure returns (uint256 price) {
+    function _tickToPrice(int24 tick, uint256 amount) internal view returns (uint256 price) {
         uint160 sqrtPriceX96 = TickMath.getSqrtRatioAtTick(tick);
 
         if (sqrtPriceX96 <= type(uint128).max) {
             uint256 priceX128 = uint256(sqrtPriceX96) * sqrtPriceX96;
-            price = FullMath.mulDiv(priceX128, amount, 1 << 192);
+            price = ETHAddress < EARAddress
+                ? FullMath.mulDiv(priceX128, amount, 1 << 192)
+                : FullMath.mulDiv(1 << 192, amount, priceX128);
         } else {
             uint256 priceX128 = FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, 1 << 64);
-            price = FullMath.mulDiv(priceX128, amount, 1 << 128);
+            price = ETHAddress < EARAddress
+                ? FullMath.mulDiv(priceX128, amount, 1 << 128)
+                : FullMath.mulDiv(1 << 128, amount, priceX128);
         }
     }
 }
