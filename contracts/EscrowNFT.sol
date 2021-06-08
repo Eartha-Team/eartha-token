@@ -24,7 +24,7 @@ contract EscrowNFT is AccessControl, ERC721Burnable, IEscrowNFT {
         _;
     }
 
-    function totalSupply() external virtual returns (uint256) {
+    function totalSupply() external view virtual override returns (uint256) {
         return _tokenIdTracker.current() - 1;
     }
 
