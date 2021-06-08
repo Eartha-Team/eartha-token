@@ -24,6 +24,10 @@ contract EscrowNFT is AccessControl, ERC721Burnable, IEscrowNFT {
         _;
     }
 
+    function totalSupply() external virtual returns (uint256) {
+        return _tokenIdTracker.current() - 1;
+    }
+
     function mint(address to, uint256 escrowId) external virtual override minterOnly() minterOnly() returns (uint256) {
         uint256 tokenId = _tokenIdTracker.current();
         _mint(to, tokenId);
