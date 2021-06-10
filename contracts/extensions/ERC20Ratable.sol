@@ -15,17 +15,23 @@ abstract contract ERC20Ratable is ERC20, IERC20Ratable {
         initializedTokenRate = true;
     }
 
-    function totalSupply(string calldata currencyCode) external view virtual override returns (uint256) {
+    function ratableTotalSupply(string calldata currencyCode) external view virtual override returns (uint256) {
         uint256 totalSupplyValue = totalSupply();
         return _getToX(totalSupplyValue, currencyCode);
     }
 
-    function balanceOf(address owner, string calldata currencyCode) external view virtual override returns (uint256) {
+    function ratableBalanceOf(address owner, string calldata currencyCode)
+        external
+        view
+        virtual
+        override
+        returns (uint256)
+    {
         uint256 balance = balanceOf(owner);
         return _getToX(balance, currencyCode);
     }
 
-    function transfer(
+    function ratableTransfer(
         address recipient,
         uint256 amount,
         string calldata currencyCode
@@ -34,7 +40,7 @@ abstract contract ERC20Ratable is ERC20, IERC20Ratable {
         return transfer(recipient, ratedAmount);
     }
 
-    function allowance(
+    function ratableAllowance(
         address owner,
         address spender,
         string calldata currencyCode
@@ -43,7 +49,7 @@ abstract contract ERC20Ratable is ERC20, IERC20Ratable {
         return _getToX(allowanceValue, currencyCode);
     }
 
-    function approve(
+    function ratableApprove(
         address spender,
         uint256 amount,
         string calldata currencyCode
@@ -52,7 +58,7 @@ abstract contract ERC20Ratable is ERC20, IERC20Ratable {
         return approve(spender, ratedAmount);
     }
 
-    function transferFrom(
+    function ratableTransferFrom(
         address sender,
         address recipient,
         uint256 amount,
@@ -62,7 +68,7 @@ abstract contract ERC20Ratable is ERC20, IERC20Ratable {
         return transferFrom(sender, recipient, ratedAmount);
     }
 
-    function increaseAllowance(
+    function ratableIncreaseAllowance(
         address spender,
         uint256 addedValue,
         string calldata currencyCode
@@ -71,7 +77,7 @@ abstract contract ERC20Ratable is ERC20, IERC20Ratable {
         return increaseAllowance(spender, ratedAddedValue);
     }
 
-    function decreaseAllowance(
+    function ratableDecreaseAllowance(
         address spender,
         uint256 subtractedValue,
         string calldata currencyCode

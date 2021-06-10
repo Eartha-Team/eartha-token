@@ -2,42 +2,42 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 interface IERC20Ratable {
-    function totalSupply(string calldata currencyCode) external view returns (uint256);
+    function ratableTotalSupply(string calldata currencyCode) external view returns (uint256);
 
-    function balanceOf(address owner, string calldata currencyCode) external view returns (uint256);
+    function ratableBalanceOf(address owner, string calldata currencyCode) external view returns (uint256);
 
-    function transfer(
+    function ratableTransfer(
         address recipient,
         uint256 amount,
         string calldata currencyCode
     ) external returns (bool);
 
-    function allowance(
+    function ratableAllowance(
         address owner,
         address spender,
         string calldata currencyCode
     ) external view returns (uint256);
 
-    function approve(
+    function ratableApprove(
         address spender,
         uint256 amount,
         string calldata currencyCode
     ) external returns (bool);
 
-    function transferFrom(
+    function ratableTransferFrom(
         address sender,
         address recipient,
         uint256 amount,
         string calldata currencyCode
     ) external returns (bool);
 
-    function increaseAllowance(
+    function ratableIncreaseAllowance(
         address spender,
         uint256 addedValue,
         string calldata currencyCode
     ) external returns (bool);
 
-    function decreaseAllowance(
+    function ratableDecreaseAllowance(
         address spender,
         uint256 subtractedValue,
         string calldata currencyCode
