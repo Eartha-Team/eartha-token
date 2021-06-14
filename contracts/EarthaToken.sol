@@ -16,9 +16,9 @@ contract EarthaToken is ERC20, AccessControl, ERC20Ratable, IEarthaToken {
     bytes32 public constant CREATIVE_REWARDS_WITHDRAWER_ROLE = keccak256('CREATIVE_REWARDS_WITHDRAWER_ROLE');
 
     uint256 public constant ESCROW_MAX_INCENTIVE = 53891156.51 ether;
-    uint256 public constant ESCROW_AMOUNT_INCENTIVE_USD = 5 ether;
+    uint256 public constant ESCROW_AMOUNT_INCENTIVE_USD = 1.5 ether;
     uint256 public constant ESCROW_CREATIVE_REWARD_USD = 0.5 ether;
-    uint256 public constant ESCROW_MIN_AMOUNT = 400 ether;
+    uint256 public constant ESCROW_MIN_AMOUNT = 200 ether;
 
     IEscrowNFT public immutable escrowNFT;
     uint256 private immutable _cap;

@@ -61,6 +61,7 @@ module.exports = {
         providerOrUrl: `https://bsc-dataseed1.binance.org`,
       }),
       network_id: 56,
+      confirmations: 10,
       timeoutBlocks: 200,
     },
   },
