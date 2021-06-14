@@ -45,6 +45,24 @@ module.exports = {
       network_id: 4,       // rinkeby's id
       gas: 5000000,        // rinkeby has a lower block limit than mainnet
     },
+    bsctestnet: {
+      provider: () => new HDWalletProvider({
+        privateKeys: [process.env.PRIVKEY],
+        providerOrUrl: `https://data-seed-prebsc-1-s1.binance.org:8545`,
+      }),
+      network_id: 97,
+      confirmations: 10,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+    bsc: {
+      provider: () => new HDWalletProvider({
+        privateKeys: [process.env.PRIVKEY],
+        providerOrUrl: `https://bsc-dataseed1.binance.org`,
+      }),
+      network_id: 56,
+      timeoutBlocks: 200,
+    },
   },
 
   // Configure your compilers
@@ -67,6 +85,7 @@ module.exports = {
     'truffle-plugin-verify'
   ],
   api_keys: {
-    etherscan: process.env.ETHERSCAN_API_KEY
+    etherscan: process.env.ETHERSCAN_API_KEY,
+    bscscan: process.env.BSCSCAN_API_KEY,
   }
 };

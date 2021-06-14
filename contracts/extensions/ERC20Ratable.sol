@@ -1,18 +1,27 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 pragma solidity >=0.4.22 <0.9.0;
 
+import '@openzeppelin/contracts/access/AccessControl.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '../interface/IERC20Ratable.sol';
 import '../interface/IEarthaTokenRate.sol';
 
-abstract contract ERC20Ratable is ERC20, IERC20Ratable {
-    IEarthaTokenRate public tokenRate;
-    bool public initializedTokenRate = false;
+abstract contract ERC20Ratable is ERC20, IERC20Ratable, AccessControl {
+    bytes32 public constant RATE_SETTER_ROLE = keccak256('RATE_SETTER_ROLE');
 
-    function initializeTokenRate(IEarthaTokenRate rate) external virtual {
-        require(!initializedTokenRate, 'already initialized');
+    IEarthaTokenRate public tokenRate;
+
+    constructor() AccessControl() {
+        _setupRole(RATE_SETTER_ROLE, _msgSender());
+    }
+
+    modifier rateSetterOnly() {
+        require(hasRole(RATE_SETTER_ROLE, _msgSender()), 'EarthaTokenRate: must have rate setter role to set role');
+        _;
+    }
+
+    function setRate(IEarthaTokenRate rate) external virtual rateSetterOnly() {
         tokenRate = rate;
-        initializedTokenRate = true;
     }
 
     function ratableTotalSupply(string calldata currencyCode) external view virtual override returns (uint256) {

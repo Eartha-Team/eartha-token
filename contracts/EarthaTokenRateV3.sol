@@ -9,7 +9,7 @@ import './libraries/TickMath.sol';
 import './libraries/FullMath.sol';
 import './interface/IEarthaTokenRate.sol';
 
-contract EarthaTokenRate is AccessControl, IEarthaTokenRate {
+contract EarthaTokenRateV3 is AccessControl, IEarthaTokenRate {
     bytes32 public constant SOURCE_SETTER_ROLE = keccak256('SOURCE_SETTER_ROLE');
 
     mapping(string => AggregatorV3Interface) public rateFeeds;
@@ -26,6 +26,7 @@ contract EarthaTokenRate is AccessControl, IEarthaTokenRate {
         AggregatorV3Interface JPYFeed,
         AggregatorV3Interface EURFeed,
         AggregatorV3Interface GBPFeed,
+        AggregatorV3Interface BTCFeed,
         address ETHAddress_,
         address EARAddress_,
         IUniswapV3Factory uniswapFactoryAddress_
@@ -41,6 +42,7 @@ contract EarthaTokenRate is AccessControl, IEarthaTokenRate {
         rateFeeds['JPY'] = JPYFeed;
         rateFeeds['EUR'] = EURFeed;
         rateFeeds['GBP'] = GBPFeed;
+        rateFeeds['BTC'] = BTCFeed;
     }
 
     modifier sourceSetterOnly() {
