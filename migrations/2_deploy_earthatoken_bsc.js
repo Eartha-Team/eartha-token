@@ -37,7 +37,7 @@ module.exports = function (deployer, network, accounts) {
   } else if (network == 'bsctestnet') {
     uniswapFactoryAddress = '0xc35dadb65012ec5796536bd9864ed8773abc74c4'
     ETHAddress = '0xae13d989dac2f0debff460ac112a837c89baa7cd'
-    USDAddress = '0x143db3CEEfbdfe5631aDD3E50f7614B6ba708BA7'
+    USDAddress = '0x2514895c72f50D8bd4B4F9b1110F0D6bD2c97526'
     JPYAddress = '0x0000000000000000000000000000000000000000'
     EURAddress = '0x0000000000000000000000000000000000000000'
     GBPAddress = '0x0000000000000000000000000000000000000000'
@@ -46,7 +46,7 @@ module.exports = function (deployer, network, accounts) {
   } else if (network == 'bsc') {
     uniswapFactoryAddress = '0xc35dadb65012ec5796536bd9864ed8773abc74c4'
     ETHAddress = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
-    USDAddress = '0x9ef1B8c0E4F7dc8bF5719Ea496883DC6401d5b2e'
+    USDAddress = '0x0567F2323251f0Aab15c8dFb1967E4e8A7D42aeE'
     JPYAddress = '0x22Db8397a6E77E41471dE256a7803829fDC8bC57'
     EURAddress = '0x0bf79F617988C472DcA68ff41eFe1338955b9A80'
     GBPAddress = '0x0000000000000000000000000000000000000000'

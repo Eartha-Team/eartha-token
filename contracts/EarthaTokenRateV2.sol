@@ -11,11 +11,12 @@ import './interface/IEarthaTokenRate.sol';
 
 contract EarthaTokenRateV2 is AccessControl, IEarthaTokenRate {
     bytes32 public constant SOURCE_SETTER_ROLE = keccak256('SOURCE_SETTER_ROLE');
+    string public constant BaseCurrency = 'BNB';
 
     mapping(string => AggregatorV3Interface) public rateFeeds;
 
     AggregatorV3Interface public USDPriceFeed;
-    address public immutable ETHAddress;
+    address public immutable BaseAddress;
     address public immutable EARAddress;
     IUniswapV2Factory public immutable uniswapFactory;
     uint256 public immutable decimals;
@@ -27,7 +28,7 @@ contract EarthaTokenRateV2 is AccessControl, IEarthaTokenRate {
         AggregatorV3Interface EURFeed,
         AggregatorV3Interface GBPFeed,
         AggregatorV3Interface BTCFeed,
-        address ETHAddress_,
+        address BaseAddress_,
         address EARAddress_,
         IUniswapV2Factory uniswapFactoryAddress_
     ) AccessControl() {
@@ -35,7 +36,7 @@ contract EarthaTokenRateV2 is AccessControl, IEarthaTokenRate {
         _setupRole(SOURCE_SETTER_ROLE, _msgSender());
 
         decimals = decimals_;
-        ETHAddress = ETHAddress_;
+        BaseAddress = BaseAddress_;
         EARAddress = EARAddress_;
         uniswapFactory = uniswapFactoryAddress_;
         USDPriceFeed = USDFeed;
@@ -71,8 +72,8 @@ contract EarthaTokenRateV2 is AccessControl, IEarthaTokenRate {
     function getXTo(uint256 amount, string calldata currencyCode) public view virtual override returns (uint256) {
         if (_compareStrings(currencyCode, 'EAR')) {
             return amount;
-        } else if (_compareStrings(currencyCode, 'ETH') || _compareStrings(currencyCode, 'WETH')) {
-            return _getETHTo(amount);
+        } else if (_compareStrings(currencyCode, BaseCurrency)) {
+            return _getBaseTo(amount);
         } else if (_compareStrings(currencyCode, 'USD')) {
             return _getUSDTo(amount);
         } else {
@@ -83,8 +84,8 @@ contract EarthaTokenRateV2 is AccessControl, IEarthaTokenRate {
     function getToX(uint256 amount, string calldata currencyCode) public view virtual override returns (uint256) {
         if (_compareStrings(currencyCode, 'EAR')) {
             return amount;
-        } else if (_compareStrings(currencyCode, 'ETH') || _compareStrings(currencyCode, 'WETH')) {
-            return _getToETH(amount);
+        } else if (_compareStrings(currencyCode, BaseCurrency)) {
+            return _getToBase(amount);
         } else if (_compareStrings(currencyCode, 'USD')) {
             return _getToUSD(amount);
         } else {
@@ -109,8 +110,8 @@ contract EarthaTokenRateV2 is AccessControl, IEarthaTokenRate {
             super.supportsInterface(interfaceId);
     }
 
-    function _getETHTo(uint256 amount) internal view virtual returns (uint256) {
-        address pairAddress = _getPairAddress(EARAddress, ETHAddress);
+    function _getBaseTo(uint256 amount) internal view virtual returns (uint256) {
+        address pairAddress = _getPairAddress(EARAddress, BaseAddress);
         if (pairAddress == address(0)) {
             return 0;
         }
@@ -123,7 +124,7 @@ contract EarthaTokenRateV2 is AccessControl, IEarthaTokenRate {
         }
         (, int256 price, , , ) = USDPriceFeed.latestRoundData();
         uint256 eth =
-            _getETHTo(_division(amount, uint256(price) * (10**(decimals - USDPriceFeed.decimals())), decimals));
+            _getBaseTo(_division(amount, uint256(price) * (10**(decimals - USDPriceFeed.decimals())), decimals));
         if (eth == 0) {
             return _multiply(amount, 10**(decimals + 2), decimals); //1USD=100EAR
         }
@@ -138,8 +139,8 @@ contract EarthaTokenRateV2 is AccessControl, IEarthaTokenRate {
         return _multiply(usd, amount, decimals);
     }
 
-    function _getToETH(uint256 amount) internal view virtual returns (uint256) {
-        uint256 nowRate = _getETHTo(1 ether);
+    function _getToBase(uint256 amount) internal view virtual returns (uint256) {
+        uint256 nowRate = _getBaseTo(1 ether);
         return _division(amount, nowRate, decimals);
     }
 
