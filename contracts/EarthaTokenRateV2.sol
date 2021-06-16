@@ -187,6 +187,6 @@ contract EarthaTokenRateV2 is AccessControl, IEarthaTokenRate {
         IUniswapV2Pair pair = IUniswapV2Pair(pairAddress);
         (uint256 Res0, uint256 Res1, ) = pair.getReserves();
 
-        return ((amount * Res0) / Res1);
+        return BaseAddress < EARAddress ? ((amount * Res1) / Res0) : ((amount * Res0) / Res1);
     }
 }
