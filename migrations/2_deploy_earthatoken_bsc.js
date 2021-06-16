@@ -6,10 +6,9 @@ const EarthaTokenRateV3 = artifacts.require('EarthaTokenRateV3')
 module.exports = function (deployer, network, accounts) {
   process.env.NETWORK = network
 
-  const now = Date.now()
-  const nftName = 'EscrowNFT' + now
+  const nftName = 'EscrowNFT'
   const nftSymbol = 'IKKI'
-  const name = 'EarthaToken' + now
+  const name = 'EarthaToken'
   const symbol = 'EAR'
   const cap = web3.utils.toWei("317006803", "ether")
 
