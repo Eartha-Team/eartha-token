@@ -10,9 +10,9 @@ module.exports = function (deployer, network, accounts) {
   const nftSymbol = 'IKKI'
   const name = 'EarthaToken'
   const symbol = 'EAR'
-  const cap = web3.utils.toWei("317006803", "ether")
+  const cap = web3.utils.toWei('317006803', 'ether')
 
-  let rate = EarthaTokenRateV3;
+  let rate = EarthaTokenRateV3
   let uniswapFactoryAddress = '0x1F98431c8aD98523631AE4a59f267346ea31F984'
   let ETHAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
   let USDAddress = '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419'
@@ -42,7 +42,7 @@ module.exports = function (deployer, network, accounts) {
     EURAddress = '0x0000000000000000000000000000000000000000'
     GBPAddress = '0x0000000000000000000000000000000000000000'
     BTCAddress = '0x5741306c21795FdCBb9b265Ea0255F499DFe515C'
-    rate = EarthaTokenRateV2;
+    rate = EarthaTokenRateV2
   } else if (network == 'bsc') {
     uniswapFactoryAddress = '0xc35dadb65012ec5796536bd9864ed8773abc74c4'
     ETHAddress = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
@@ -51,7 +51,7 @@ module.exports = function (deployer, network, accounts) {
     EURAddress = '0x0bf79F617988C472DcA68ff41eFe1338955b9A80'
     GBPAddress = '0x0000000000000000000000000000000000000000'
     BTCAddress = '0x264990fbd0A4796A3E3d8E37C4d5F87a3aCa5Ebf'
-    rate = EarthaTokenRateV2;
+    rate = EarthaTokenRateV2
   }
 
   return deployer
