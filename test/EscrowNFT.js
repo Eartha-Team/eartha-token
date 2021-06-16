@@ -1,13 +1,11 @@
-const EscrowNFT = artifacts.require("EscrowNFT");
+const EscrowNFT = artifacts.require('EscrowNFT')
 
-/*
- * uncomment accounts to access the test accounts made available by the
- * Ethereum client
- * See docs: https://www.trufflesuite.com/docs/truffle/testing/writing-tests-in-javascript
- */
-contract("EscrowNFT", function (/* accounts */) {
-  it("should assert true", async function () {
-    await EscrowNFT.deployed();
-    return assert.isTrue(true);
-  });
-});
+contract('EscrowNFT', function (/* accounts */) {
+  beforeEach(async () => {
+    this.escrowMFTInstance = await EscrowNFT.deployed()
+  })
+  it('call totalSupply', async () => {
+    const totalSupply = await this.escrowMFTInstance.totalSupply()
+    assert.equal(totalSupply, 0, "Total supply isn't 0")
+  })
+})
